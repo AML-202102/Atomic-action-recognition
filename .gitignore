@@ -1,5 +1,6 @@
-
+model/__pycache__
 testJSON.py
 annotations
 data
 annotations_made/
+baseline.pth

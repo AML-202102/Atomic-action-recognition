@@ -1,5 +1,8 @@
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
+from sklearn.preprocessing import MultiLabelBinarizer
+import torchvision.transforms as tf
+from PIL import Image
 import matplotlib.pyplot as plt
 import skimage.io  as io
 import scipy.io as sio
@@ -19,28 +22,25 @@ class Dataset(Dataset):
         image_id = self.list_files.get("images")[index].get("id")
         image_name = self.list_files.get("images")[index].get("file_name")
         image = io.imread(os.path.join(self.data_root, image_name))
+        mlb = MultiLabelBinarizer(classes = (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16))
         labels = []
         images_box = []
         for i in range(0, len(self.list_files.get('annotations'))):
             if image_id == self.list_files.get("annotations")[i].get('image_id'):
-                #label = self.list_files.get("annotations")[i].get('actions')
-                #labels.append(torch.from_numpy(np.array(self.list_files.get("annotations")[i].get('actions'))))
-                labels.append(self.list_files.get("annotations")[i].get('actions'))
+                labels.append((self.list_files.get("annotations")[i].get('actions')))
                 bbox = self.list_files.get("annotations")[i].get('bbox')
-                image_box = image[int(bbox[0]):int(bbox[0])+int(bbox[2]), int(bbox[1]):int(bbox[1])+int(bbox[3])]
-                images_box.append(image_box)
-                plt.figure()
-                plt.imshow(image_box)
-                plt.show()
-                #np.concatenate(labels, np.array(label))
-                #np.concatenate(images_box, image_box)
-        #np.stack(images_box)
-        #np.stack(labels)
-        breakpoint()
-        images_tensor = torch.unsqueeze(torch.Tensor(images_box), 0)
-        labels_tensor = torch.unsqueeze(torch.Tensor(labels[0]), 0)
-        #images_tensor = torch.from_numpy(np.array(images_box))
-        #labels_tensor = torch.from_numpy(np.array(labels))
+                image_box = image[int(bbox[1]):int(bbox[1])+int(bbox[3]), int(bbox[0]):int(bbox[0])+int(bbox[2])]
+                images_box.append(np.array(Image.fromarray(image_box).resize((16,16))))
+        images_box_tensor = torch.Tensor(images_box)
+        labels = mlb.fit_transform(labels)
+        labels_tensor = torch.Tensor(labels)
+        n_box, n_classes = labels_tensor.size()
+        if n_box>0:
+            images_tensor = torch.zeros((n_box,128))
+            for u in range(n_box):
+                images_tensor[u] = torch.Tensor(np.resize(np.array(images_box_tensor[u].flatten()), 128))
+        else:
+            images_tensor = torch.Tensor([])
         return images_tensor, labels_tensor
 
     def __len__(self):

@@ -1,4 +1,4 @@
-from dataset import train_loader, test_loader
+from dataset1 import train_loader, test_loader
 import argparse
 import torch
 import time
@@ -10,64 +10,16 @@ from model.Optim import ScheduledOptim
 import numpy as np
 from eval import visualize_pred, edit_score, f_score
 from tqdm import tqdm
+import sklearn.metrics as metrics
 
 
+def test(model, test_loader, device, criterion, n_class, dataset):
+    predicted_result = []
 
-
-def train_epoch(model, train_loader, criterion, optimizer, device):
-    model.train()
-    running_loss = 0.0
-    running_acc = 0.0
-
-    for i, data in enumerate(train_loader, 0):
-        # Iterate over data
-        inputs, labels = data[0].to(device), data[1].to(device)
-        _, n_box, n_classes = labels.size()
-        sup=0
-        if n_box != 0:
-            _, input_len, _ = inputs.size()
-            idx = torch.arange(1, input_len + 1)
-            attn = torch.arange(0, input_len)
-            idx = idx.unsqueeze(0).to(device)
-            attn = attn.unsqueeze(0).to(device)
-            for j in range(16):
-                #Adapt labels
-                label_box=[]
-                for k in range (n_box):
-                    if labels[0][k][j] == 0: #0 because batch_size=1
-                        label_box.append(0) 
-                    else:
-                        label_box.append(j)
-                #   zero the parameter gradients
-                optimizer.zero_grad()
-                # forward
-                outputs = model(inputs, idx, attn)
-                outputs = outputs.squeeze(0)
-                labels_fin = torch.Tensor(label_box).long()
-                labels_fin =labels_fin.to(device)
-                _, predicted = torch.max(outputs, 1)
-                loss = criterion(outputs, labels_fin)
-
-                loss.backward()
-                optimizer.step_and_update_lr()
-                running_loss += loss.item()
-                # count the correct result
-                running_corrects = (predicted == labels_fin).sum()
-                # calculate the accuray each step and accumulate
-                running_acc += running_corrects.double() / labels_fin.size(0)
-        else:
-            sup = sup + 1
-
-    train_loss = running_loss / ((len(train_loader)*16)-sup)
-    train_accuracy = running_acc / ((len(train_loader)*16)-sup)
-
-    return train_loss, train_accuracy
-
-
-def test_epoch(model, test_loader, criterion, device):
     model.eval()
     running_loss = 0.0
     running_acc = 0.0
+    running_mAP = 0.0
 
     with torch.no_grad():
         for data in test_loader:
@@ -98,55 +50,35 @@ def test_epoch(model, test_loader, criterion, device):
                     running_loss += loss.item()
                     running_corrects = (predicted == labels_fin).sum()
                     running_acc += running_corrects.double() / labels_fin.size(0)
+                    predicted_result.append(predicted)
+
+                for u in range(n_box):
+                    pred = np.zeros(16)
+                    for l in range(16):
+                        if l in predicted_result[u]:
+                            pred[l] = 1
+                    running_mAP += metrics.average_precision_score(labels[0][u].cpu().numpy(), pred, average='macro')
+
             else:
                 sup = sup + 1
-                
-    test_loss = running_loss / ((len(test_loader)*16)-sup)
+            
+            
+
+    
+    test_mAP = running_mAP / (len(test_loader)-sup)
+    #test_loss = running_loss / ((len(test_loader)*16)-sup)
     test_accuracy = running_acc / ((len(test_loader)*16)-sup)
 
-    return test_loss, test_accuracy
 
+    print('Test Accuray: {:.4f}'.format(test_accuracy))
+    #print('Test Loss: {:.4f}'.format(test_loss))
+    print('Test mAP: {:.4f}'.format(test_mAP))
 
-def train(model, train_loader, test_loader, criterion1, optimizer, device, config):
-    since = time.time()
-    best_acc = 0.0
-
-    for epoch in tqdm(range(config.epoch)):
-         print('Epoch {}/{}'.format(epoch, config.epoch - 1))
-         print('-' * 10)
-
-        train_loss, train_accu = train_epoch(
-            model, train_loader, criterion1, optimizer, device
-        )
-        print('Training Loss: {:.4f} Acc: {:.4f}'.format(
-            train_loss, train_accu))
-
-        test_loss, test_accu = test_epoch(
-            model, test_loader, criterion1, device
-        )
-        print('Test Loss: {:.4f} Acc: {:.4f}'.format(
-            test_loss, test_accu))
-
-        if test_accu > best_acc:
-            best_acc = test_accu
-            best_model_wts = copy.deepcopy(model.state_dict())
-
-        print()
-
-    time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(
-        time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
-
-    # load best model weights
-    model.load_state_dict(best_model_wts)
-
-    return model
 
 
 
 def main():
-    parser = argparse.ArgumentParser(description='video parsing')
+    parser = argparse.ArgumentParser(description='Arguments')
     parser.add_argument('--dataset', default='data', help='data path')
 
     parser.add_argument('--epoch', type=int, default=30)
@@ -190,6 +122,7 @@ def main():
         raise Exception('No GPU found, please run without --cuda')
     print(device)
 
+
     # ========= Preparing SdConv =========#
     sdConv = SDConv(
         n_position=config.n_position,
@@ -212,10 +145,10 @@ def main():
             betas=(0.9, 0.98), eps=1e-09),
         config.d_model, config.n_warmup_steps)
 
+    sdConv.load_state_dict(torch.load('baseline.pth'))
 
-    sdConv = train(sdConv, trainX_loader, testX_loader, criterion, optimizer, device, config)
-    # save the best model
-    torch.save(sdConv.state_dict(), 'baseline.pth')
+    test(sdConv, testX_loader, device, criterion, config.n_classes, config.dataset)
+
 
 
 if __name__ == '__main__':
