@@ -1,4 +1,4 @@
-from dataset1 import train_loader, test_loader
+from dataset import train_loader, test_loader
 import argparse
 import torch
 import time
@@ -107,7 +107,7 @@ def main():
     parser.add_argument('--num_workers', type=int, default=0, help='number of workers.')
     parser.add_argument('--data_root', type=str, default='data', help='data root path.')
     parser.add_argument('--train_label', type=str, default='train_fold1.json', help='train label path.')
-    parser.add_argument('--test_label', type=str, default='test_fold1.json', help='test label path.')
+    parser.add_argument('--test_label', type=str, default='test_fold2.json', help='test label path.')
 
     config = parser.parse_args()
     print(config)

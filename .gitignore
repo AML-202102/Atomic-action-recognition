@@ -4,3 +4,4 @@ annotations
 data
 annotations_made/
 baseline.pth
+__pycache__/
