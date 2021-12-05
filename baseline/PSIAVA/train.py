@@ -19,7 +19,7 @@ def eval_pred(model, test_loader, device, n_class):
 
     current_video = 0
     overall_acc = 0.0
-    mAP = 0.0
+    f1 = 0.0
 
     ground_truth = []
     predicted_result = []
@@ -64,13 +64,13 @@ def eval_pred(model, test_loader, device, n_class):
             running_acc = metrics.accuracy_score(y_true=target_list, y_pred=pred_list, normalize=True)
             overall_acc += running_acc
            
-            mAP += metrics.average_precision_score(y_true=target_list, y_score=pred_list,  average='micro')
+            f1 += metrics.f1_score(y_true=target_list, y_pred=pred_list, average='micro')
             
             current_video += 1
 
         eval_acc = overall_acc / len(test_loader)
         print('Evaluation Accuray: {:.4f}'.format(eval_acc))
-        print('mAP: {:.4f}'.format(mAP/len(test_loader)))
+        print('F1: {:.4f}'.format(f1/len(test_loader)))
         model.train(mode=was_training)
 
 
