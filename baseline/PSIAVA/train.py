@@ -8,6 +8,7 @@ import torch.optim as optim
 from .model.Models import SDConv
 from .model.Optim import ScheduledOptim
 import numpy as np
+from tqdm import tqdm
 import sklearn.metrics as metrics
 
 
@@ -18,7 +19,7 @@ def eval_pred(model, test_loader, device, n_class):
 
     current_video = 0
     overall_acc = 0.0
-    f1_score = 0
+    mAP = 0.0
 
     ground_truth = []
     predicted_result = []
@@ -27,8 +28,12 @@ def eval_pred(model, test_loader, device, n_class):
         for data in test_loader:
             inputs, labels = data[0].to(device), data[1].to(device)
             _, input_len, _ = inputs.size()
-            idx = torch.arange(1, input_len + 1)
-            attn = torch.arange(1, (input_len // 4) + 1)
+            if input_len <= 2:
+                idx = torch.arange(1, input_len + 1)
+                attn = torch.arange(0, input_len)
+            else:
+                idx = torch.arange(1, input_len + 1)
+                attn = torch.arange(1, (input_len // 4) + 1)
             idx = idx.unsqueeze(0).to(device)
             attn = attn.unsqueeze(0).to(device)
             inputs = inputs.to(torch.float32)
@@ -36,29 +41,36 @@ def eval_pred(model, test_loader, device, n_class):
             outputs = model(inputs, idx, attn)
             outputs = torch.squeeze(outputs).to(torch.float32)
             labels = torch.squeeze(labels).to(torch.float32)
-            _, predicted = torch.max(outputs, 1)
-            _, labels = torch.max(labels, 1)
 
-            running_corrects = (predicted == labels).sum()
-            running_acc = running_corrects.double() / labels.size(0)
+            correct = 0     
+            pred_list = np.zeros((input_len,16)) 
+            target_list = labels.cpu().numpy()                       
+            for i in range(input_len):
+                pred = torch.sigmoid(outputs)[i]
+                length = 0
+                for w in range(16):
+                    if labels[i][w] == 1.0:
+                        length += 1
+                sublist_target = torch.topk(labels[i], length, largest=True, sorted=True)[1].tolist()
+
+                sublist_pred=[]
+                preds = [0]*16
+                for j in range(len(pred)):
+                    if float(pred[j]) > 0.5:
+                        sublist_pred.append(j)
+                        preds[j]=1.0
+                pred_list[i] = preds
+
+            running_acc = metrics.accuracy_score(y_true=target_list, y_pred=pred_list, normalize=True)
             overall_acc += running_acc
-
-            # transfer the torch tensor to numpy array first, then normalized to p[0,1]
-            predicted = predicted.cpu().numpy()
-            labels = labels.cpu().numpy()
-
-            ground_truth.extend(np.array(labels.data))
-            predicted_result.extend(np.array(predicted.data))
-
-            f1_score += metrics.f1_score(y_true=labels, y_pred=predicted, average='micro')
-
+           
+            mAP += metrics.average_precision_score(y_true=target_list, y_score=pred_list,  average='micro')
+            
             current_video += 1
 
         eval_acc = overall_acc / len(test_loader)
         print('Evaluation Accuray: {:.4f}'.format(eval_acc))
-        print('F1: {:.4f}'.format(f1_score/len(test_loader)))
-
-
+        print('mAP: {:.4f}'.format(mAP/len(test_loader)))
         model.train(mode=was_training)
 
 
@@ -71,8 +83,12 @@ def train_epoch(model, train_loader, criterion, optimizer, device):
         # Iterate over data
         inputs, labels = data[0].to(device), data[1].to(device)
         _, input_len, _ = inputs.size()
-        idx = torch.arange(1, input_len + 1)
-        attn = torch.arange(1, (input_len // 4) + 1)
+        if input_len <= 2:
+            idx = torch.arange(1, input_len + 1)
+            attn = torch.arange(0, input_len)
+        else:
+            idx = torch.arange(1, input_len + 1)
+            attn = torch.arange(1, (input_len // 4) + 1)
         idx = idx.unsqueeze(0).to(device)
         attn = attn.unsqueeze(0).to(device)
         inputs = inputs.to(torch.float32)
@@ -83,22 +99,36 @@ def train_epoch(model, train_loader, criterion, optimizer, device):
         outputs = model(inputs, idx, attn)
         outputs = torch.squeeze(outputs).to(torch.float32)
         labels = torch.squeeze(labels).to(torch.float32)
-        _, predicted = torch.max(outputs, 1)
-
-        loss = criterion(outputs, labels)
+        loss = criterion(torch.sigmoid(outputs), labels)
 
         loss.backward()
         optimizer.step_and_update_lr()
         running_loss += loss.item()
+        
+        pred_list = np.zeros((input_len,16)) 
+        target_list = labels.cpu().numpy() 
         # count the correct result
-        _, labels = torch.max(labels, 1)
-        running_corrects = (predicted == labels).sum()
-        # calculate the accuray each step and accumulate
-        running_acc += running_corrects.double() / labels.size(0)
+        for m in range(input_len):
+            pred = torch.sigmoid(outputs)[m]
+            length = 0
+            for w in range(16):
+                if labels[m][w] == 1.0:
+                    length += 1
+            sublist_target = torch.topk(labels[m], length, largest=True, sorted=True)[1].tolist()
 
+            sublist_pred=[]
+            preds = [0]*16
+            for j in range(len(pred)):
+                if float(pred[j]) > 0.5:
+                    sublist_pred.append(j)
+                    preds[j]=1.0
+            pred_list[m] = preds
+
+        acc = metrics.accuracy_score(y_true=target_list, y_pred=pred_list, normalize=True)
+        running_acc += acc                           
+       
     train_loss = running_loss / len(train_loader)
     train_accuracy = running_acc / len(train_loader)
-
     return train_loss, train_accuracy
 
 
@@ -111,8 +141,12 @@ def test_epoch(model, test_loader, criterion, device):
         for data in test_loader:
             inputs, labels = data[0].to(device), data[1].to(device)
             _, input_len, _ = inputs.size()
-            idx = torch.arange(1, input_len + 1)
-            attn = torch.arange(1, (input_len // 4) + 1)
+            if input_len <= 2:
+                idx = torch.arange(1, input_len + 1)
+                attn = torch.arange(0, input_len)
+            else:
+                idx = torch.arange(1, input_len + 1)
+                attn = torch.arange(1, (input_len // 4) + 1)
             idx = idx.unsqueeze(0).to(device)
             attn = attn.unsqueeze(0).to(device)
             inputs = inputs.to(torch.float32)
@@ -121,12 +155,30 @@ def test_epoch(model, test_loader, criterion, device):
             outputs = torch.squeeze(outputs).to(torch.float32)
             labels = torch.squeeze(labels).to(torch.float32)
 
-            _, predicted = torch.max(outputs, 1)
-            loss = criterion(outputs, labels)
-            _, labels = torch.max(labels, 1)
+            loss = criterion(torch.sigmoid(outputs), labels)
             running_loss += loss.item()
-            running_corrects = (predicted == labels).sum()
-            running_acc += running_corrects.double() / labels.size(0)
+
+            pred_list = np.zeros((input_len,16)) 
+            target_list = labels.cpu().numpy() 
+            # count the correct result
+            for i in range(input_len):
+                pred = torch.sigmoid(outputs)[i]
+                length = 0
+                for w in range(16):
+                    if labels[i][w] == 1.0:
+                        length += 1
+                sublist_target = torch.topk(labels[i], length, largest=True, sorted=True)[1].tolist()
+
+                sublist_pred=[]
+                preds = [0]*16
+                for j in range(len(pred)):
+                    if float(pred[j]) > 0.5:
+                        sublist_pred.append(j)
+                        preds[j]=1.0
+                pred_list[i] = preds
+
+            acc = metrics.accuracy_score(y_true=target_list, y_pred=pred_list, normalize=True)
+            running_acc += acc    
 
     test_loss = running_loss / len(test_loader)
     test_accuracy = running_acc / len(test_loader)
@@ -138,7 +190,7 @@ def train(model, train_loader, test_loader, criterion1, optimizer, device, confi
     since = time.time()
     best_acc = 0.0
 
-    for epoch in range(config.epoch):
+    for epoch in tqdm(range(config.epoch)):
         print('Epoch {}/{}'.format(epoch, config.epoch - 1))
         print('-' * 10)
 
@@ -160,6 +212,9 @@ def train(model, train_loader, test_loader, criterion1, optimizer, device, confi
 
         print()
 
+    if best_acc == 0.0:
+        best_model_wts = copy.deepcopy(model.state_dict())
+
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
@@ -172,6 +227,8 @@ def train(model, train_loader, test_loader, criterion1, optimizer, device, confi
 
 
 def main(config):
+    print(config)
+
     # ========= Loading Dataset =========#
     train_loader = video_train_loader(config)
     test_loader = video_test_loader(config)
@@ -196,7 +253,7 @@ def main(config):
         dropout=config.dropout
     ).to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCELoss()
     optimizer = ScheduledOptim(
         optim.Adam(
             filter(lambda x: x.requires_grad, sdConv.parameters()),
@@ -204,13 +261,15 @@ def main(config):
         config.d_model, config.n_warmup_steps)
 
     if config.train:
-    	model = train(sdConv, train_loader, test_loader, criterion, optimizer, device, config)
-    	# save the best model
-    	torch.save(model, config.save_path + '.pth')
+        model = train(sdConv, train_loader, test_loader, criterion, optimizer, device, config)
+        # save the best model
+        torch.save(model, config.save_path + '.pth')
    
     if config.test:
-    	net = torch.load(config.checkpoint, device)
-    	eval_pred(net, test_loader, device, config.n_classes)
+        net = torch.load(config.checkpoint, device)
+        eval_pred(net, test_loader, device, config.n_classes)
+
+
 
 
 if __name__ == '__main__':

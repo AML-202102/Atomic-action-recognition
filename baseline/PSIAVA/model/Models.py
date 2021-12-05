@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from model.Layers import EncoderLayer
+from .Layers import EncoderLayer
 import torch.nn.functional as F
 import copy
 
@@ -117,7 +117,10 @@ class SDConv(nn.Module):
         # src_video_seq[batch_size, video_length, d_model]
         src_video_seq = src_video_seq.permute(0, 2, 1)
         enc_input = self.dilation_enc(src_video_seq)
-        enc_input = self.pool(enc_input).permute(0, 2, 1)
+        if len(input_len[0]) <=2: 
+            enc_input = enc_input.permute(0,2,1)
+        else:
+            enc_input = self.pool(enc_input).permute(0, 2, 1)
         enc_output, self_attentions = self.encoder(enc_input, attn_len, return_attns=True)
         '''
         enc_output dimension[batch_size(1), video_length, d_model]
