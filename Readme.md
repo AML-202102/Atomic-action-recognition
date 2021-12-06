@@ -69,7 +69,7 @@ The following lines allow to run test and demo with the final method MViT:
 ```
     python main.py --method MVIT --test --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
     
-    python main.py --method MVIT --demo --img PSI-AVA/data/CASE001/00000.png --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
+    python main.py --method MVIT --demo --img PSI-AVA/data/CASE001/00000.jpg --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
    
 ```
 NB: the demo is done with images from the best split. Therefore you have to choose an annotated image from CASE001 from 00000 to 10255. Frames are annotated each 35s, therefore you can run demo on 00000, 00035, 00070, etc..
