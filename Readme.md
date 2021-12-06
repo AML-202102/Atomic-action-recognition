@@ -12,8 +12,8 @@ The metrics that we obtained can be seen as follows:
 
 | Metrics | PSI-AVA (TCN) | PSI-AVA (LSTM) | JIGSAWS (TCN) | JIGSAWS (LSTM) |
 | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | 
-| **Acc** | 0.1841 | X | 0.6593 | 0.6591 |
-| **F-Score** | 0.4081 | X | 0.6593 | 0.6591 |
+| **Acc** | 0.1841 | 0.1130 | 0.6593 | 0.6591 |
+| **F-Score** | 0.4081 | 0.3740 | 0.6593 | 0.6591 |
 
 In this repository, there is the option of running test with the model for each of the dataset and the CNN-TCN or CNN-LSTM implementation. By the following soft link, there will be all the models available:
 
