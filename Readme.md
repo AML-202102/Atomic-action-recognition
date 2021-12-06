@@ -8,6 +8,27 @@ In this repository, you will find an approximation to the atomic surgery actions
 
 To approach the problem mentioned above, we proposed a baseline according to [Symmetric Dilated Convolution for Surgical Gesture Recognition](https://arxiv.org/pdf/2007.06373.pdf) (SdConv). This algorithm takes as inputs Temporal-Spatial Features resulting from a combination of CNN-TCN models. SdConv was proposed for the JIGSAWS dataset, which provides annotations of 15 surgical gestures that correspond to activity segments. Thus, we modified SdConv for PSI-AVA dataset. This dataset differs from JIGSAWS because PSI-AVA has assigned from one to three actions per instrument, and one frame can have more than one instrument. We also proposed other Temporal-Spatial Features derived from a CNN-LSTM combination, since the literature reports that LSTM has a good performance for this task too.
 
+### Preparation
+
+To implement our final method, you must verify some libraries versions and run the following lines first:
+- Pytorch = 1.10
+- CUDA = 10.2
+```
+conda create -n mvit anaconda python=3.8
+    
+conda activate mvit
+    
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+    
+python -m pip install detectron2 -f \
+  https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.10/index.html
+```
+- simplejson: `pip install simplejson`
+- PyAV: `conda install av -c conda-forge`
+- skelearn: `pip install sklearn`
+- OpenCV: `pip install opencv-python`
+- FairScale: `pip install 'git+https://github.com/facebookresearch/fairscale'`
+
 The metrics that we obtained can be seen as follows (you can note that they differ slightly from the article as the models were not correctly saved):
 
 | Metrics | PSI-AVA (TCN) | PSI-AVA (LSTM) | JIGSAWS (TCN) | JIGSAWS (LSTM) |
@@ -42,27 +63,7 @@ It is important to highlight that these lines allow to run test on the split whi
 
 ## Final Method
 
-### Preparation
-
-To implement our final method, you must verify some libraries versions and run the following lines first:
-- Pytorch = 1.10
-- CUDA = 10.2
-```
-conda create -n mvit anaconda python=3.8
-    
-conda activate mvit
-    
-conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
-    
-python -m pip install detectron2 -f \
-  https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.10/index.html
-```
-- simplejson: `pip install simplejson`
-- PyAV: `conda install av -c conda-forge`
-- skelearn: `pip install sklearn`
-- OpenCV: `pip install opencv-python`
-- FairScale: `pip install 'git+https://github.com/facebookresearch/fairscale'`
-
+We implemented MViT architecture to approach our problem.
 
 The following lines allow to run test and demo with the final method MViT:
 
