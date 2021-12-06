@@ -61,7 +61,7 @@ def perform_visu(test_loader, image, model, test_meter, cfg, writer=None):
                 frame_id = row[2]
                 if int(frame_id) == ctr_idx[0] :
                     image_name = row[3]
-        image_test = image.split('/')[8]+'/'+image.split('/')[9]
+        image_test = image.split('/')[2]+'/'+image.split('/')[3]
         if image_name !=None and image_name== image_test:
             actions = [0]*cfg.MODEL.NUM_CLASSES
             with open(os.path.join(cfg.DEMO.LABEL_FILE_PATH), 'r') as file:
