@@ -20,6 +20,7 @@ In this repository, there is the option of running test with the model for each 
 ```
     ln -s ...
 ```
+It is important to highlight that 
 
 ## Final Method
 
