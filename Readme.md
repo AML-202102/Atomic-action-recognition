@@ -10,8 +10,8 @@ The metrics that we obtained can be seen at follows:
 
 | Metrics | PSI-AVA (TCN) | PSI-AVA (LSTM) | JIGSAWS (TCN) | JIGSAWS (LSTM) |
 | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | 
-| Acc | 0.1841 | X | 0.8973 | X |
-| F-Score | 0.4081 | 0.8973 | X |
+| **Acc** | 0.1841 | X | 0.8973 | X |
+| **F-Score** | 0.4081 | 0.8973 | X |
 
 In this repository, there is the option of running test with the model for each of the dataset and the CNN-TCN or CNN-LSTM implementation. By the following soft link, there will be all the models available:
 
@@ -22,4 +22,13 @@ In this repository, there is the option of running test with the model for each 
 ## Final Method
 
 ### Preparation
+
+## Credits
+
+Our implementations were based on:
+
+https://github.com/lulucelia/SdConv
+
+https://github.com/facebookresearch/SlowFast/blob/main/projects/mvit
+
 
