@@ -6,7 +6,7 @@ TRAIN:
   CHECKPOINT_PERIOD: 5
   AUTO_RESUME: True
   CHECKPOINT_EPOCH_RESET: True
-  CHECKPOINT_FILE_PATH: Models/Slowfast_best_split2.pyth
+  CHECKPOINT_FILE_PATH: Models/PSI-AVA/Slowfast_best_split2.pyth
   CHECKPOINT_TYPE: pytorch
 DATA:
   NUM_FRAMES: 16
