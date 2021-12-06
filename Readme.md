@@ -26,7 +26,6 @@ In this repository, there is the option of running test with the model for each 
 To implement our final method, you must verify some libraries versions and run the following lines first:
 - Pytorch = 1.10
 - CUDA = 10.2
-
 ```
     conda create -n mvit anaconda python=3.8
     
@@ -35,11 +34,8 @@ To implement our final method, you must verify some libraries versions and run t
     conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
     
     python -m pip install detectron2 -f \
-  https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
+  https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.10/index.html
 ```
-- [fvcore](https://github.com/facebookresearch/fvcore/): `pip install 'git+https://github.com/facebookresearch/fvcore'`
-- [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
-  You can install them together at [pytorch.org](https://pytorch.org) to make sure of this.
 - simplejson: `pip install simplejson`
 - PyAV: `conda install av -c conda-forge`
 - skelearn: `pip install sklearn`
