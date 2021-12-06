@@ -1,6 +1,6 @@
 # Atomic Action Recognition for Surgical Scene Understanding by using Transformers
 
-In this repository, you will find an approximation to the atomic surgery actions recognition problem. By implementing PSI-AVA, a dataset created by the Biomedical Computer Vision (BCV) research group from Universidad de los Andes, we trained a model with [Multiscale Vision Transformers](https://arxiv.org/abs/2104.11227.pdf) architecture.
+In this repository, you will find an approximation to the atomic surgery actions recognition task. By implementing PSI-AVA, a dataset created by the Biomedical Computer Vision (BCV) research group from Universidad de los Andes, we trained a model with [Multiscale Vision Transformers](https://arxiv.org/abs/2104.11227.pdf) architecture.
 
 ![MViTResults](MviTResults.png)
 
@@ -12,14 +12,33 @@ The metrics that we obtained can be seen as follows:
 
 | Metrics | PSI-AVA (TCN) | PSI-AVA (LSTM) | JIGSAWS (TCN) | JIGSAWS (LSTM) |
 | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | 
-| **Acc** | 0.1841 | X | 0.6593 | 0.6591 |
-| **F-Score** | 0.4081 | X | 0.6593 | 0.6591 |
+| **Acc** | 0.1841 | 0.1130 | 0.6593 | 0.6591 |
+| **F-Score** | 0.4081 | 0.3740 | 0.6593 | 0.6591 |
 
-In this repository, there is the option of running test with the model for each of the dataset and the CNN-TCN or CNN-LSTM implementation. By the following soft link, there will be all the models available:
+In this repository, there is the option of running test with the model for each of the dataset and the CNN-TCN or CNN-LSTM implementation.
+
+Start by creating the following softlinks to access the data and trained models: 
+```
+    ln -s /media/user_home0/mverlyck/AMLProject/JIGSAWS/ JIGSAWS
+    
+    ln -s /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/ PSI-AVA
+    
+    ln -s /media/user_home0/mverlyck/AMLProject/Models/ Models
+```
+The followings lines allow to run test with the baseline method for both dataset, first with TCN features and then with LSTM features:
 
 ```
-    ln -s ...
+    python main.py --test --n_classes 16 --data_root PSI-AVA/STFeatures --test_label PSI-AVA/splits/Split_7/test.txt --checkpoint Models/TCN_best_PSIAVA_split7.pth
+    
+    python main.py --test --n_classes 15 --data_root JIGSAWS/STFeatures --test_label JIGSAWS/splits/Split_2/test.txt --checkpoint Models/TCN_best_JIGSAWS_split2.pth
+    
+    python main.py --test --n_classes 16 --data_root PSI-AVA/LSTMFeatures --test_label PSI-AVA/splits/Split_4/test.txt --checkpoint Models/LSTM_best_PSIAVA_split4.pth
+    
+    python main.py --test --n_classes 15 --data_root JIGSAWS/LSTMFeatures --test_label JIGSAWS/splits/Split_3/test.txt --checkpoint Models/TCN_best_JIGSAWS_split3.pth
+   
 ```
+
+It is important to highlight that 
 
 ## Final Method
 
@@ -43,6 +62,18 @@ python -m pip install detectron2 -f \
 - skelearn: `pip install sklearn`
 - OpenCV: `pip install opencv-python`
 - FairScale: `pip install 'git+https://github.com/facebookresearch/fairscale'`
+
+
+The following lines allow to run test and demo with the final method MViT:
+
+```
+    python main.py --test --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
+    
+    python main.py --demo --img PSI-AVA/data/CASE001/00000.png --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
+   
+```
+NB: the demo is done with images from the best split. Therefore you have to choose an annotated image from CASE001 from 00000 to 10255. Frames are annotated each 35s, therefore you can run demo on 00000, 00035, 00070, etc..
+
 
 ## Credits
 
