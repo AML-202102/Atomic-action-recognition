@@ -34,7 +34,7 @@ The followings lines allow to run test with the baseline method for both dataset
     
     python main.py --method baseline_PSIAVA --test --n_classes 16 --data_root PSI-AVA/LSTMFeatures --test_label PSI-AVA/splits/Split_4/test.txt --checkpoint Models/PSI-AVA/LSTM_best_PSIAVA_split4.pth
     
-    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/LSTMFeatures --test_label JIGSAWS/splits/Split_3/test.txt --checkpoint Models/JIGSAWS/TCN_best_JIGSAWS_split3.pth
+    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/LSTMFeatures --test_label JIGSAWS/splits/Split_3/test.txt --checkpoint Models/JIGSAWS/LSTM_best_JIGSAWS_split3.pth
    
 ```
 
@@ -69,7 +69,7 @@ The following lines allow to run test and demo with the final method MViT:
 ```
     python main.py --method MVIT --test --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
     
-    python main.py --method MVIT --demo --img PSI-AVA/data/CASE001/00000.png --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
+    python main.py --method MVIT --demo --img PSI-AVA/data/CASE001/00000.jpg --n_classes 16 --cfg method/configs/PSI-AVA/MVIT.yaml 
    
 ```
 NB: the demo is done with images from the best split. Therefore you have to choose an annotated image from CASE001 from 00000 to 10255. Frames are annotated each 35s, therefore you can run demo on 00000, 00035, 00070, etc..
