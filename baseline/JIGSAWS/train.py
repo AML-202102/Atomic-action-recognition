@@ -85,7 +85,7 @@ def train_epoch(model, train_loader, criterion, optimizer, device):
         labels = torch.squeeze(labels).to(torch.float32)
         _, predicted = torch.max(outputs, 1)
 
-        loss = criterion(outputs, labels)
+        loss = criterion(torch.softmax(outputs,1), labels)
 
         loss.backward()
         optimizer.step_and_update_lr()
@@ -122,7 +122,7 @@ def test_epoch(model, test_loader, criterion, device):
             labels = torch.squeeze(labels).to(torch.float32)
 
             _, predicted = torch.max(outputs, 1)
-            loss = criterion(outputs, labels)
+            loss = criterion(torch.softmax(outputs,1), labels)
             _, labels = torch.max(labels, 1)
             running_loss += loss.item()
             running_corrects = (predicted == labels).sum()
@@ -196,7 +196,7 @@ def main(config):
         dropout=config.dropout
     ).to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCELoss()
     optimizer = ScheduledOptim(
         optim.Adam(
             filter(lambda x: x.requires_grad, sdConv.parameters()),

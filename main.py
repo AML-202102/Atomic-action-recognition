@@ -20,7 +20,7 @@ import sklearn.metrics as metrics
 class opts(object):
     def __init__(self):
         self.parser = argparse.ArgumentParser(description='Baseline parser')
-        self.parser.add_argument('--save_path', default="/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split8", help='save path')
+        self.parser.add_argument('--save_path', default="/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/LSTM_best_PSIAVA", help='save path')
 
         self.parser.add_argument('--epoch', type=int, default=30)
         self.parser.add_argument('--train_batch_size', type=int, default=1, help='training batch size')
@@ -33,7 +33,7 @@ class opts(object):
         self.parser.add_argument('--d_inner_hid', type=int, default=512, help='hidden_state dim')
         self.parser.add_argument('--d_k', type=int, default=16, help='key')
         self.parser.add_argument('--d_v', type=int, default=16, help='value')
-        self.parser.add_argument('--n_classes', type=int, default=16, help='no.of surgical gestures')
+        self.parser.add_argument('--n_classes', type=int, default=15, help='no.of surgical gestures')
         self.parser.add_argument('--dropout', type=float, default=0.5)
         self.parser.add_argument('--n_position', type=int, default=5000, help='max sequence len')
 
@@ -46,13 +46,13 @@ class opts(object):
         self.parser.add_argument('--n_warmup_steps', type=int, default=4000, help='optimization')
 
         self.parser.add_argument('--num_workers', type=int, default=0, help='number of workers.')
-        self.parser.add_argument('--data_root', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/STFeatures', help='data root path.')
-        self.parser.add_argument('--train_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_8/train.txt', help='train label path.')
-        self.parser.add_argument('--test_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_8/train.txt', help='test label path.')
+        self.parser.add_argument('--data_root', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/LSTMFeatures', help='data root path.')
+        self.parser.add_argument('--train_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_4/train.txt', help='train label path.')
+        self.parser.add_argument('--test_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_4/test.txt', help='test label path.')
 
         self.parser.add_argument('--train', action='store_true', default=False)
         self.parser.add_argument('--test', action='store_true', default=False)
-        self.parser.add_argument('--checkpoint', default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split8.pth')
+        self.parser.add_argument('--checkpoint', default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/LSTM_best_PSIAVA.pth')
 
         self.parser.add_argument('--method', type=str, default = 'MVIT', help='method to use')
 

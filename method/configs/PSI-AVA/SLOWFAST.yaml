@@ -4,8 +4,9 @@ TRAIN:
   BATCH_SIZE: 1
   EVAL_PERIOD: 15
   CHECKPOINT_PERIOD: 5
-  AUTO_RESUME: False
-  # CHECKPOINT_FILE_PATH: path to the pretrain checkpoint file.
+  AUTO_RESUME: True
+  CHECKPOINT_EPOCH_RESET: True
+  CHECKPOINT_FILE_PATH: /media/user_home0/mverlyck/slowfast/Split_8_slowfast/checkpoints/checkpoint_epoch_00005.pyth
   CHECKPOINT_TYPE: pytorch
 DATA:
   NUM_FRAMES: 16
@@ -18,9 +19,9 @@ DETECTION:
   ENABLE: True
   ALIGNED: True
 AVA:
-  FRAME_DIR: ../PSI-AVA_code/PSI-AVA/data/ 
-  FRAME_LIST_DIR: ../PSI-AVA_code/PSI-AVA/frame_lists/Split_7/
-  ANNOTATION_DIR: ../PSI-AVA_code/PSI-AVA/annotations_ava/Split_7/ 
+  FRAME_DIR: /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/data/ 
+  FRAME_LIST_DIR: /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/frame_lists/Split_8/
+  ANNOTATION_DIR: /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/annotations_ava/Split_8/ 
   TRAIN_LISTS: ['train.csv']
   TEST_LISTS: ['val.csv']
   TRAIN_GT_BOX_LISTS: ['train.csv']
@@ -88,3 +89,7 @@ NUM_GPUS: 1
 NUM_SHARDS: 0
 RNG_SEED: 0
 OUTPUT_DIR: Split_7_slowfast/
+DEMO:
+  ENABLE: True
+  LABEL_FILE_PATH: /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/annotations_ava/Split_8/action_list.pbtxt 
+  WEBCAM: 0
