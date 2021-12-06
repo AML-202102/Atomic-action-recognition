@@ -29,9 +29,13 @@ To implement our final method, you must verify some libraries versions and run t
 
 ```
     conda create -n mvit anaconda python=3.8
+    
     conda activate mvit
+    
     conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
-    python -m pip install detectron2 -f \ https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
+    
+    python -m pip install detectron2 -f \
+  https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
 ```
 - [fvcore](https://github.com/facebookresearch/fvcore/): `pip install 'git+https://github.com/facebookresearch/fvcore'`
 - [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
