@@ -28,13 +28,13 @@ Start by creating the following softlinks to access the data and trained models:
 The followings lines allow to run test with the baseline method for both dataset, first with TCN features and then with LSTM features:
 
 ```
-    python main.py --method baseline_PSIAVA --test --n_classes 16 --data_root PSI-AVA/STFeatures --test_label PSI-AVA/splits/Split_7/test.txt --checkpoint Models/TCN_best_PSIAVA_split7.pth
+    python main.py --method baseline_PSIAVA --test --n_classes 16 --data_root PSI-AVA/STFeatures --test_label PSI-AVA/splits/Split_7/test.txt --checkpoint Models/PSI-AVA/TCN_best_PSIAVA_split7.pth
     
-    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/STFeatures --test_label JIGSAWS/splits/Split_2/test.txt --checkpoint Models/TCN_best_JIGSAWS_split2.pth
+    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/STFeatures --test_label JIGSAWS/splits/Split_2/test.txt --checkpoint Models/JIGSAWS/TCN_best_JIGSAWS_split2.pth
     
-    python main.py --method baseline_PSIAVA --test --n_classes 16 --data_root PSI-AVA/LSTMFeatures --test_label PSI-AVA/splits/Split_4/test.txt --checkpoint Models/LSTM_best_PSIAVA_split4.pth
+    python main.py --method baseline_PSIAVA --test --n_classes 16 --data_root PSI-AVA/LSTMFeatures --test_label PSI-AVA/splits/Split_4/test.txt --checkpoint Models/PSI-AVA/LSTM_best_PSIAVA_split4.pth
     
-    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/LSTMFeatures --test_label JIGSAWS/splits/Split_3/test.txt --checkpoint Models/TCN_best_JIGSAWS_split3.pth
+    python main.py --method baseline_JIGSAWS --test --n_classes 15 --data_root JIGSAWS/LSTMFeatures --test_label JIGSAWS/splits/Split_3/test.txt --checkpoint Models/JIGSAWS/TCN_best_JIGSAWS_split3.pth
    
 ```
 
