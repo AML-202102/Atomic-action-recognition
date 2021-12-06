@@ -112,7 +112,7 @@ DATA_LOADER:
 NUM_GPUS: 1
 NUM_SHARDS: 0
 RNG_SEED: 0
-OUTPUT_DIR: Split_1/
+OUTPUT_DIR: Split_8/
 DEMO:
   ENABLE: True
   LABEL_FILE_PATH: /media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/annotations_ava/Split_8/action_list.pbtxt 

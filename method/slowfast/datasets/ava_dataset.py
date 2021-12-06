@@ -366,7 +366,6 @@ class Ava(torch.utils.data.Dataset):
                 "ori_boxes" and "metadata".
         """
         video_idx, sec_idx, sec, center_idx = self._keyframe_indices[idx]
-        print(center_idx)
         # Get the frame idxs for current clip.
         seq = utils.get_sequence(
             center_idx,
@@ -429,4 +428,4 @@ class Ava(torch.utils.data.Dataset):
             "metadata": metadata,
         }
 
-        return imgs, label_arrs, idx, extra_data, image_path
+        return imgs, label_arrs, idx, extra_data, center_idx

@@ -16,10 +16,11 @@ import sklearn.metrics as metrics
 
 
 
+
 class opts(object):
     def __init__(self):
         self.parser = argparse.ArgumentParser(description='Baseline parser')
-        self.parser.add_argument('--save_path', default="/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split7", help='save path')
+        self.parser.add_argument('--save_path', default="/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split8", help='save path')
 
         self.parser.add_argument('--epoch', type=int, default=30)
         self.parser.add_argument('--train_batch_size', type=int, default=1, help='training batch size')
@@ -46,16 +47,16 @@ class opts(object):
 
         self.parser.add_argument('--num_workers', type=int, default=0, help='number of workers.')
         self.parser.add_argument('--data_root', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/STFeatures', help='data root path.')
-        self.parser.add_argument('--train_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_7/train.txt', help='train label path.')
-        self.parser.add_argument('--test_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_7/train.txt', help='test label path.')
+        self.parser.add_argument('--train_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_8/train.txt', help='train label path.')
+        self.parser.add_argument('--test_label', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/splits/Split_8/train.txt', help='test label path.')
 
         self.parser.add_argument('--train', action='store_true', default=False)
         self.parser.add_argument('--test', action='store_true', default=False)
-        self.parser.add_argument('--checkpoint', default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split7.pth')
+        self.parser.add_argument('--checkpoint', default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/SdConv/split8.pth')
 
         self.parser.add_argument('--method', type=str, default = 'MVIT', help='method to use')
 
-        self.parser.add_argument('--img', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/data/CASE021/00000.jpg', help='path to image for demo')
+        self.parser.add_argument('--img', type=str, default='/media/user_home0/mverlyck/AMLProject/PSI-AVA_code/PSI-AVA/data/CASE001/00035.jpg', help='path to image for demo')
         self.parser.add_argument('--demo', action='store_true', default=False)
 
         self.parser.add_argument(

@@ -21,6 +21,8 @@ from slowfast.datasets import loader
 from slowfast.models import build_model
 from slowfast.utils.env import pathmgr
 from slowfast.utils.meters import AVAMeter, TestMeter
+import csv
+from csv import reader
 
 logger = logging.get_logger(__name__)
 
@@ -50,8 +52,17 @@ def perform_visu(test_loader, image, model, test_meter, cfg, writer=None):
     model.eval()
     test_meter.iter_tic()
 
-    for cur_iter, (inputs, labels, video_idx, meta, image_path) in enumerate(test_loader):
-        if image_path[0] == image:
+    for cur_iter, (inputs, labels, video_idx, meta, ctr_idx) in enumerate(test_loader):
+        image_name=None
+        with open(os.path.join(cfg.AVA.FRAME_LIST_DIR,'val.csv'), 'r') as read_obj:
+            csv_reader = reader(read_obj)
+            header = next(csv_reader)
+            for row in csv_reader:
+                frame_id = row[2]
+                if int(frame_id) == ctr_idx[0] :
+                    image_name = row[3]
+        image_test = image.split('/')[8]+'/'+image.split('/')[9]
+        if image_name !=None and image_name== image_test:
             actions = [0]*cfg.MODEL.NUM_CLASSES
             with open(os.path.join(cfg.DEMO.LABEL_FILE_PATH), 'r') as file:
                 k=0
@@ -102,55 +113,12 @@ def perform_visu(test_loader, image, model, test_meter, cfg, writer=None):
                 # Update and log stats.
                 test_meter.update_stats(preds, ori_boxes, metadata)
                 test_meter.log_iter_stats(None, cur_iter)
-            # else:
-            #     # Perform the forward pass.
-            #     preds = model(inputs)
 
-            #     # Gather all the predictions across all the devices to perform ensemble.
-            #     if cfg.NUM_GPUS > 1:
-            #         preds, labels, video_idx = du.all_gather(
-            #             [preds, labels, video_idx]
-            #         )
-            #     if cfg.NUM_GPUS:
-            #         preds = preds.cpu()
-            #         labels = labels.cpu()
-            #         video_idx = video_idx.cpu()
-
-
-                # test_meter.iter_toc()
-                # # Update and log stats.
-                # test_meter.update_stats(
-                #     preds.detach(), labels.detach(), video_idx.detach()
-                # )
-                # test_meter.log_iter_stats(cur_iter)
 
 
 
             test_meter.iter_tic()
 
-            #torch.topk(input, k, dim=None, largest=True, sorted=True, *, out=None)
-
-
-            # Log epoch stats and print the final testing results.
-            # if not cfg.DETECTION.ENABLE:
-            #     all_preds = test_meter.video_preds.clone().detach()
-            #     all_labels = test_meter.video_labels
-            #     if cfg.NUM_GPUS:
-            #         all_preds = all_preds.cpu()
-            #         all_labels = all_labels.cpu()
-            #     if writer is not None:
-            #         writer.plot_eval(preds=all_preds, labels=all_labels)
-
-            #     if cfg.TEST.SAVE_RESULTS_PATH != "":
-            #         save_path = os.path.join(cfg.OUTPUT_DIR, cfg.TEST.SAVE_RESULTS_PATH)
-
-            #         if du.is_root_proc():
-            #             with pathmgr.open(save_path, "wb") as f:
-            #                 pickle.dump([all_preds, all_labels], f)
-
-            #         logger.info(
-            #             "Successfully saved prediction results to {}".format(save_path)
-            #         )
 
             test_meter.finalize_metrics()
 
@@ -183,15 +151,17 @@ def perform_visu(test_loader, image, model, test_meter, cfg, writer=None):
                 if num_action[i] !=1:
                     for j in range(num_action[i]):              
                         imagebis = cv2.putText(imagebis, '[GT] : {}'.format(actions[int(indices_gt[i][j])]), (int(bbox[i][1]), int(bbox[i][2])+(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
-                        imagebis = cv2.putText(imagebis, '[{:.4f}] : {}'.format(float(preds[i][int(indices_pred[i][j])]),actions[int(indices_pred[i][j])]), (int(bbox[i][3])-250, int(bbox[i][2])+(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
+                        imagebis = cv2.putText(imagebis, '[{:.4f}] : {}'.format(float(preds[i][int(indices_pred[i][j])]),actions[int(indices_pred[i][j])]), (int(bbox[i][3])-250, int(bbox[i][4])-(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
                 else:
                     imagebis = cv2.putText(imagebis, '[GT] : {}'.format(actions[int(indices_gt[i])]), (int(bbox[i][1]), int(bbox[i][2])+(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
-                    imagebis = cv2.putText(imagebis, '[{:.4f}] : {}'.format(float(preds[i][int(indices_pred[i])]),actions[int(indices_pred[i])]), (int(bbox[i][3])-250, int(bbox[i][2])+(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
-         
+                    imagebis = cv2.putText(imagebis, '[{:.4f}] : {}'.format(float(preds[i][int(indices_pred[i])]),actions[int(indices_pred[i])]), (int(bbox[i][3])-250, int(bbox[i][4])-(30*(j+1))), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,i*30,i*30), 2)
+            
+            io.imsave(os.path.join('method','prediction.png'),  imagebis)
             plt.figure()
             plt.axis('off')
             plt.imshow(imagebis)
             plt.show()
+
 
     return test_meter
 

@@ -174,7 +174,6 @@ def run_evaluation(
     categories, groundtruth, detections, excluded_keys, verbose=True
 ):
     """AVA evaluation main logic."""
-
     pascal_evaluator = object_detection_evaluation.PascalDetectionEvaluator(
         categories
     )
