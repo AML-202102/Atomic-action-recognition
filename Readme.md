@@ -11,7 +11,7 @@ The metrics that we obtained can be seen as follows:
 | Metrics | PSI-AVA (TCN) | PSI-AVA (LSTM) | JIGSAWS (TCN) | JIGSAWS (LSTM) |
 | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | 
 | **Acc** | 0.1841 | X | 0.8973 | X |
-| **F-Score** | 0.4081 | 0.8973 | 0.8973 | X |
+| **F-Score** | 0.4081 | X | 0.8973 | X |
 
 In this repository, there is the option of running test with the model for each of the dataset and the CNN-TCN or CNN-LSTM implementation. By the following soft link, there will be all the models available:
 
@@ -30,6 +30,7 @@ To implement our final method, you must verify some libraries versions and run t
 ```
     conda create -n mvit anaconda python=3.8
     conda activate mvit
+    conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
     python -m pip install detectron2 -f \ https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
 ```
 - [fvcore](https://github.com/facebookresearch/fvcore/): `pip install 'git+https://github.com/facebookresearch/fvcore'`
