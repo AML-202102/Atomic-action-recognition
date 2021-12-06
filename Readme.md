@@ -41,19 +41,9 @@ To implement our final method, you must verify some libraries versions and run t
 - [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
   You can install them together at [pytorch.org](https://pytorch.org) to make sure of this.
 - simplejson: `pip install simplejson`
-- GCC >= 4.9
 - PyAV: `conda install av -c conda-forge`
-- ffmpeg (4.0 is prefereed, will be installed along with PyAV)
-- PyYaml: (will be installed along with fvcore)
-- tqdm: (will be installed along with fvcore)
-- iopath: `pip install -U iopath` or `conda install -c iopath iopath`
-- psutil: `pip install psutil`
+- skelearn: `pip install sklearn`
 - OpenCV: `pip install opencv-python`
-- torchvision: `pip install torchvision` or `conda install torchvision -c pytorch`
-- tensorboard: `pip install tensorboard`
-- moviepy: (optional, for visualizing video on tensorboard) `conda install -c conda-forge moviepy` or `pip install moviepy`
-- PyTorchVideo: `pip install pytorchvideo`
-- [Detectron2](https://github.com/facebookresearch/detectron2):
 - FairScale: `pip install 'git+https://github.com/facebookresearch/fairscale'`
 
 ## Credits
