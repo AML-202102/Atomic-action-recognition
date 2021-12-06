@@ -27,13 +27,13 @@ To implement our final method, you must verify some libraries versions and run t
 - Pytorch = 1.10
 - CUDA = 10.2
 ```
-    conda create -n mvit anaconda python=3.8
+conda create -n mvit anaconda python=3.8
     
-    conda activate mvit
+conda activate mvit
     
-    conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
     
-    python -m pip install detectron2 -f \
+python -m pip install detectron2 -f \
   https://dl.fbaipublicfiles.com/detectron2/wheels/cu102/torch1.10/index.html
 ```
 - simplejson: `pip install simplejson`
